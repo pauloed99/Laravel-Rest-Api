@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->primary();
             $table->string('cpf')->unique();
             $table->string('password');
-            $table->boolean('is_admin');
+            $table->boolean('is_admin')->default('0');
             $table->timestamps();
         });
     }

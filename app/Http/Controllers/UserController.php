@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\User;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -25,9 +27,15 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        //
+        $data = $request->all();
+
+        $data['password'] = Hash::make($request->password);
+
+        $user = User::create($data);
+
+        return response()->json(['user' => $user], 200);
     }
 
     /**
@@ -38,7 +46,13 @@ class UserController extends Controller
      */
     public function show($email)
     {
-        //
+        $user = User::where('email', $email)->first();
+
+        if(!$user){
+            return response()->json(['msg' => 'O usuário não existe !'], 400);
+        }
+
+        return response()->json(['user' => $user], 200);
     }
 
     /**
@@ -48,9 +62,17 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $email)
-    {
-        //
+    public function update(UpdateUserRequest $request, $email)
+    {   
+        $data = $request->only(['firstname', 'lastname']);
+
+        $user = User::where('email', $email)->update($data);
+
+        if(!$user){
+            return response()->json(['msg' => 'O usuário não existe !'], 400);
+        }
+
+        return response()->json(['msg' => 'Usuário atualizado com sucesso !'], 200);
     }
 
     /**
@@ -61,6 +83,12 @@ class UserController extends Controller
      */
     public function destroy($email)
     {
-        //
+        $user = User::where('email', $email)->delete();
+
+        if(!$user){
+            return response()->json(['msg' => 'O usuário não existe !'], 400);
+        }
+
+        return response()->json(['msg' => 'Usuário deletado com sucesso !'], 200);
     }
 }
