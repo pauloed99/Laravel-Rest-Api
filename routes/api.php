@@ -20,3 +20,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::apiResources(['users' => 'UserController', 'books' => 'BookController']);
 
+Route::put('users/{email}/password', 'UserController@updatePassword');
+

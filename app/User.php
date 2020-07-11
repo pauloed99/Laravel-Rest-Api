@@ -34,5 +34,12 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'is_admin'
     ];
+
+    public static function compareHash($passwordField, $userPassword)
+    {
+        if (Hash::check($passwordField, $userPassword)) {
+            return true;
+        }
+    }
     
 }

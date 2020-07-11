@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdatePasswordUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\User;
 use Illuminate\Support\Facades\Hash;
@@ -73,6 +74,25 @@ class UserController extends Controller
         }
 
         return response()->json(['msg' => 'Usuário atualizado com sucesso !'], 200);
+    }
+
+    public function updatePassword(UpdatePasswordUserRequest $request, $email)
+    {
+        $user = User::where('email', $email)->first();
+
+        if(!$user){
+            return response()->json(['msg' => 'O usuário não existe !'], 400);
+        }
+
+        if(User::compareHash($request->password, $user->password)){
+            $request->password2 = Hash::make($request->password2);
+
+            User::where('email', $email)->update(['password' => $request->password2]);
+
+            return response()->json(['msg' => 'Senha Redefinida com sucesso !'], 200);
+        }
+
+        return response()->json(['msg' => 'Antiga senha incorreta !'], 400);
     }
 
     /**
