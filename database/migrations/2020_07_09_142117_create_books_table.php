@@ -20,7 +20,9 @@ class CreateBooksTable extends Migration
             $table->integer('year');
             $table->string('language')->default('Português');
             $table->string('author');
+            $table->integer('pages');
             $table->double('price');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
