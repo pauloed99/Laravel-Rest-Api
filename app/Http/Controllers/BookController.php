@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Book;
 use App\Http\Requests\StoreUpdateBookRequest;
+use App\Http\Requests\UpdateImageBookRequest;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
@@ -33,6 +34,25 @@ class BookController extends Controller
         $book = Book::create($data);
 
         return response()->json(['book' => $book], 200);
+    }
+
+    public function updateImage(UpdateImageBookRequest $request, $id)
+    {
+        $book = Book::where('id', $id)->first();
+
+        if(!$book){
+            return response()->json(['msg' => 'O livro não existe !'], 400);
+        }
+
+        if($request->hasFile('image') && $request->image->isValid()){
+            $imagePath = $request->image->store('books');
+
+            Book::where('id', $id)->update(['image' => asset('storage/' . $imagePath)]);
+
+            return response()->json(['msg' => 'Imagem do produto atualizada']);
+        }
+
+        return response()->json(['msg' => 'Imagem inválida !']);
     }
 
     /**

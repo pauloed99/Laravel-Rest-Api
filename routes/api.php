@@ -22,3 +22,4 @@ Route::apiResources(['users' => 'UserController', 'books' => 'BookController']);
 
 Route::put('users/{email}/password', 'UserController@updatePassword');
 
+Route::post('books/{id}/image', 'BookController@updateImage');
