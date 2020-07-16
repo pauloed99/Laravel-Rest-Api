@@ -23,3 +23,17 @@ Route::apiResources(['users' => 'UserController', 'books' => 'BookController']);
 Route::put('users/{email}/password', 'UserController@updatePassword');
 
 Route::post('books/{id}/image', 'BookController@updateImage');
+
+Route::group([
+
+    'prefix' => 'auth',
+    'as' => 'auth.'
+
+], function () {
+
+    Route::post('login', 'AuthController@login');
+    Route::post('logout', 'AuthController@logout');
+    Route::post('refresh', 'AuthController@refresh');
+    Route::post('me', 'AuthController@me');
+
+});
