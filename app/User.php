@@ -52,5 +52,11 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function books()
+    {
+        return $this->belongsToMany('App\Book', 'book_user', 'email', 'book_id')
+        ->withTimestamps()->withPivot('id');
+    }
     
 }

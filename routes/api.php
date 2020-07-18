@@ -14,9 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
 Route::apiResources(['users' => 'UserController', 'books' => 'BookController']);
 
@@ -37,3 +34,5 @@ Route::group([
     Route::post('me', 'AuthController@me');
 
 });
+
+Route::apiResource('userBooks', 'UserProductController');
