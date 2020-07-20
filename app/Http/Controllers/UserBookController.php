@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Book;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class UserProductController extends Controller
-{
+class UserBookController extends Controller
+{   
+    public function __construct()
+    {
+        $this->middleware('apiJwt');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +20,7 @@ class UserProductController extends Controller
      */
     public function index()
     {
-        if(Auth::user()->is_admin === '1'){
+        if(Auth::user()->is_admin === true){
             $users = User::with('books')->paginate(4);
 
             return response()->json(['users' => $users], 200);
@@ -35,6 +40,12 @@ class UserProductController extends Controller
     public function store(Request $request)
     {
         $user = User::where('email', Auth::user()->email)->first();
+
+        $book = Book::where('id', $request->id)->first();
+
+        if(!$book){
+            return response()->json(['msg' => 'O produto não existe !'], 400);
+        }
     
         $user->books()->attach($request->id);
 
@@ -53,6 +64,10 @@ class UserProductController extends Controller
 
         $userBook = $user->books()->wherePivot('id', $id)->first();
 
+        if(!$userBook){
+            return response()->json(['msg' => 'Você não possui acesso a este recurso !']);
+        }
+
         return response()->json(['userBook' => $userBook], 200);
     }
 
@@ -66,7 +81,11 @@ class UserProductController extends Controller
     {
         $user = User::where('email', Auth::user()->email)->first();
 
-        $user->books()->wherePivot('id', $id)->detach();
+        $status = $user->books()->wherePivot('id', $id)->detach();
+
+        if(!$status){
+            return response()->json(['msg' => 'Não foi possível deletar o produto !']);
+        }
 
         return response()->json(['msg' => 'Produto deletado com sucesso !']);
     }

@@ -35,4 +35,4 @@ Route::group([
 
 });
 
-Route::apiResource('userBooks', 'UserProductController');
+Route::apiResource('userBooks', 'UserBookController');

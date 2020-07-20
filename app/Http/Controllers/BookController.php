@@ -9,6 +9,12 @@ use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('apiJwt');
+        $this->middleware('manageBook')->except(['index', 'show']);
+    }
     /**
      * Display a listing of the resource.
      *

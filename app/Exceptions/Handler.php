@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -55,6 +56,12 @@ class Handler extends ExceptionHandler
             if($exception instanceof ValidationException){
                 return response()->json($exception->errors(), $exception->status);
             }
+        }
+
+        if ($exception instanceof AuthorizationException){
+            return response()->
+            json(['msg' => 'Você não possui autorização para acessar esta rota !'],
+            403);
         }
 
         return parent::render($request, $exception);

@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('apiJwt')->except('store');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -17,6 +22,8 @@ class UserController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', User::class);
+
         $users = User::paginate(4);
 
         return response()->json(['users' => $users], 200);
@@ -49,6 +56,8 @@ class UserController extends Controller
     {
         $user = User::where('email', $email)->first();
 
+        $this->authorize('view', $user);
+
         if(!$user){
             return response()->json(['msg' => 'O usuário não existe !'], 400);
         }
@@ -69,6 +78,8 @@ class UserController extends Controller
 
         $user = User::where('email', $email)->update($data);
 
+        $this->authorize('update', $user);
+
         if(!$user){
             return response()->json(['msg' => 'O usuário não existe !'], 400);
         }
@@ -79,6 +90,8 @@ class UserController extends Controller
     public function updatePassword(UpdatePasswordUserRequest $request, $email)
     {
         $user = User::where('email', $email)->first();
+
+        $this->authorize('update', $user);
 
         if(!$user){
             return response()->json(['msg' => 'O usuário não existe !'], 400);
@@ -103,11 +116,15 @@ class UserController extends Controller
      */
     public function destroy($email)
     {
-        $user = User::where('email', $email)->delete();
+        $user = User::where('email', $email)->first();
+
+        $this->authorize('delete', $user);
 
         if(!$user){
             return response()->json(['msg' => 'O usuário não existe !'], 400);
         }
+
+        User::where('email', $email)->delete();
 
         return response()->json(['msg' => 'Usuário deletado com sucesso !'], 200);
     }
