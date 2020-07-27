@@ -76,9 +76,11 @@ class UserController extends Controller
     {   
         $data = $request->only(['firstname', 'lastname']);
 
-        $user = User::where('email', $email)->update($data);
+        $user = User::where('email', $email)->first();
 
         $this->authorize('update', $user);
+
+        $user->update($data);
 
         if(!$user){
             return response()->json(['msg' => 'O usuário não existe !'], 400);
@@ -100,7 +102,7 @@ class UserController extends Controller
         if(User::compareHash($request->password, $user->password)){
             $request->password2 = Hash::make($request->password2);
 
-            User::where('email', $email)->update(['password' => $request->password2]);
+            $user->update(['password' => $request->password2]);
 
             return response()->json(['msg' => 'Senha Redefinida com sucesso !'], 200);
         }
@@ -124,7 +126,7 @@ class UserController extends Controller
             return response()->json(['msg' => 'O usuário não existe !'], 400);
         }
 
-        User::where('email', $email)->delete();
+        $user->delete();
 
         return response()->json(['msg' => 'Usuário deletado com sucesso !'], 200);
     }
