@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 
@@ -18,7 +19,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('apiJwt')->except('login');
+        $this->middleware('apiJwt')->except(['login', 'verifyToken']);
     }
 
     /**
@@ -83,5 +84,20 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => Auth::factory()->getTTL() * 6000
         ]);
+    }
+
+    public function verifyToken(){
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+        } catch (\Exception $e) {
+            if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
+                return response()->json(['status' => 'Token is Invalid'], 400);
+            }else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
+                return response()->json(['status' => 'Token is Expired'], 400);
+            }else{
+                return response()->json(['status' => 'Authorization Token not found'], 400);
+            }
+        }
+        return response()->json(['status' => 'Você está autorizado !'], 200);
     }
 }
