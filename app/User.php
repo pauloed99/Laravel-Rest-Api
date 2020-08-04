@@ -33,7 +33,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'is_admin'
+        'password'
     ];
 
     public static function compareHash($passwordField, $userPassword)

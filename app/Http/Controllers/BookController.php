@@ -53,7 +53,7 @@ class BookController extends Controller
         if($request->hasFile('image') && $request->image->isValid()){
             $imagePath = $request->image->store('books');
 
-            Book::where('id', $id)->update(['image' => asset('storage/' . $imagePath)]);
+            $book->update(['image' => asset('storage/' . $imagePath)]);
 
             return response()->json(['msg' => 'Imagem do produto atualizada']);
         }

@@ -16,7 +16,7 @@ class ManageBook
      */
     public function handle($request, Closure $next)
     {   
-        if(Gate::allows('manageProduct')){
+        if(Gate::allows('manage-book')){
             return $next($request);
         }
 
