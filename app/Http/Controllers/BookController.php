@@ -57,10 +57,10 @@ class BookController extends Controller
 
             $book->save();
 
-            return response()->json(['msg' => 'Imagem do produto atualizada']);
+            return response()->json(['msg' => 'Imagem do produto atualizada'], 200);
         }
 
-        return response()->json(['msg' => 'Imagem inválida !']);
+        return response()->json(['msg' => 'Imagem inválida !'], 400);
     }
 
     /**
@@ -94,7 +94,7 @@ class BookController extends Controller
         $book = Book::where('id', $id)->update($data);
 
         if(!$book){
-            return response()->json(['msg' => 'O livro não existe']);
+            return response()->json(['msg' => 'O livro não existe'], 400);
         }
 
         return response()->json(['msg' => 'Livro atualizado com sucesso !'], 200);
