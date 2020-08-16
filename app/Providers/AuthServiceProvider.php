@@ -31,5 +31,9 @@ class AuthServiceProvider extends ServiceProvider
             return $user->is_admin === true;
         });
 
+        Gate::define('manage-userBook', function($user){
+            return $user->is_admin === false;
+        });
+
     }
 }

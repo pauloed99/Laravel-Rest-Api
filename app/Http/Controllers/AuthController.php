@@ -31,6 +31,7 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
         
+        Auth::factory()->setTTL(1440);
         if (! $token = Auth::attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
@@ -79,6 +80,8 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token)
     {
+        
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
@@ -86,18 +89,4 @@ class AuthController extends Controller
         ]);
     }
 
-    public function verifyToken(){
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
-        } catch (\Exception $e) {
-            if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
-                return response()->json(['status' => 'Token is Invalid'], 400);
-            }else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
-                return response()->json(['status' => 'Token is Expired'], 400);
-            }else{
-                return response()->json(['status' => 'Authorization Token not found'], 400);
-            }
-        }
-        return response()->json(['status' => 'Você está autorizado !'], 200);
-    }
 }

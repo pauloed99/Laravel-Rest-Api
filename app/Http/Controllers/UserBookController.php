@@ -6,6 +6,8 @@ use App\Book;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class UserBookController extends Controller
 {   
@@ -20,7 +22,7 @@ class UserBookController extends Controller
      */
     public function index()
     {
-        if(Auth::user()->is_admin === true){
+        if(Auth::user()->is_admin){
             $users = User::with('books')->paginate(4);
 
             return response()->json(['users' => $users], 200);
@@ -39,6 +41,8 @@ class UserBookController extends Controller
      */
     public function store(Request $request)
     {
+        Gate::authorize('manage-userBook');
+        
         $user = User::where('email', Auth::user()->email)->first();
 
         $book = Book::where('id', $request->id)->first();
@@ -60,12 +64,23 @@ class UserBookController extends Controller
      */
     public function show($id)
     {
+        if(Auth::user()->is_admin){
+            $userBook = DB::table('book_user')->where('id', $id)->first();
+
+            if(!$userBook){
+                return response()
+                ->json(['msg' => 'O id de compra do livro relacionado ao usuário não existe !', 400]);
+            }
+
+            return response()->json(['userBook' => $userBook], 200);
+        }
+
         $user = User::where('email', Auth::user()->email)->first();
 
         $userBook = $user->books()->wherePivot('id', $id)->first();
 
         if(!$userBook){
-            return response()->json(['msg' => 'Você não possui acesso a este recurso !']);
+            return response()->json(['msg' => 'Você não possui acesso a este recurso !'], 400);
         }
 
         return response()->json(['userBook' => $userBook], 200);
@@ -79,14 +94,16 @@ class UserBookController extends Controller
      */
     public function destroy($id)
     {
+        Gate::authorize('manage-userBook');
+
         $user = User::where('email', Auth::user()->email)->first();
 
         $status = $user->books()->wherePivot('id', $id)->detach();
 
         if(!$status){
-            return response()->json(['msg' => 'Não foi possível deletar o produto !']);
+            return response()->json(['msg' => 'Não foi possível deletar o produto !'], 400);
         }
 
-        return response()->json(['msg' => 'Produto deletado com sucesso !']);
+        return response()->json(['msg' => 'Produto deletado com sucesso !'], 200);
     }
 }
