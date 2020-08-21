@@ -28,9 +28,11 @@ class UserBookController extends Controller
             return response()->json(['users' => $users], 200);
         }
 
-        $user = User::where('email', Auth::user()->email)->with('books')->first();  
+        $user = User::where('email', Auth::user()->email)->with('books')->paginate(4);  
+
+        $fullPrice = User::userBooksPrice(Auth::user()->email);
         
-        return response()->json(['user' => $user], 200);
+        return response()->json(['user' => $user, 'fullPrice' => $fullPrice], 200);
     }
 
     /**

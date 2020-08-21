@@ -58,5 +58,18 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany('App\Book', 'book_user', 'email', 'book_id')
         ->withTimestamps()->withPivot('id');
     }
+
+    public static function userBooksPrice($email){
+
+        $user = User::where('email', $email)->with('books')->first();
+
+        $count = 0;
+
+        foreach ($user->books as $userBook) {
+            $count += $userBook->price;
+        }
+
+        return $count;
+    }
     
 }
